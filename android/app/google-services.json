@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1004083789050",
+    "project_id": "kpigi-chat-app-58809",
+    "storage_bucket": "kpigi-chat-app-58809.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1004083789050:android:6f0180e213935def505d43",
+        "android_client_info": {
+          "package_name": "com.example.kpigi_chat_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyClJUOjSVjPfdP-h2xCtgaQQdVfEPkCg9o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
