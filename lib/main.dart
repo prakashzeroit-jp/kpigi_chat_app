@@ -1,11 +1,17 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:kpigi_chat_app/app/screens/login_screen.dart';
 
+
+Future<void> firebaseBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  //await Firebase.initializeApp();
 
   print("main() started");
   try {
@@ -14,6 +20,8 @@ void main() async {
   } catch (e) {
     print("❌ Firebase initialization failed: $e");
   }
+    FirebaseMessaging.onBackgroundMessage(firebaseBackgroundHandler);
+
   runApp(const MyApp());
 }
 

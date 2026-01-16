@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:kpigi_chat_app/app/screens/chat_screen.dart';
+import 'package:kpigi_chat_app/services/firebase_service.dart';
 
 class LoginScreen extends StatelessWidget {
   final emailC = TextEditingController();
   final passC = TextEditingController();
+   final FirebaseService _firebaseService = FirebaseService();
 
   @override
   Widget build(BuildContext context) {
@@ -20,11 +22,25 @@ class LoginScreen extends StatelessWidget {
             TextField(controller: passC, decoration: const InputDecoration(hintText: "Password")),
             ElevatedButton(
               onPressed: () async {
-                await FirebaseAuth.instance.signInWithEmailAndPassword(
-                  email: emailC.text,
-                  password: passC.text,
-                );
-                Get.to(ChatScreen());
+                try {
+                  await FirebaseAuth.instance.signInWithEmailAndPassword(
+                    email: emailC.text.trim(),
+                    password: passC.text.trim(),
+                  );
+
+                  // 🔔 IMPORTANT: Save FCM token
+                  await _firebaseService.saveFcmToken();
+
+                  // 👉 Go to chat
+                  Get.offAll(ChatScreen());
+                } catch (e) {
+                  Get.snackbar(
+                    "Login Error",
+                    e.toString(),
+                    backgroundColor: Colors.red,
+                    colorText: Colors.white,
+                  );
+                }
               },
               child: const Text("Login"),
             ),
