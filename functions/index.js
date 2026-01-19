@@ -4,45 +4,29 @@ const admin = require("firebase-admin");
 admin.initializeApp();
 
 exports.sendChatNotification = functions.firestore
-  .document("messages/{messageId}")
+  .document("messages/{id}")
   .onCreate(async (snap) => {
-    try {
-      const data = snap.data();
-      const receiverId = data.receiverId;
-      const text = data.text ?? "New message";
+    const data = snap.data();
 
-      if (!receiverId) {
-        console.log("❌ receiverId missing");
-        return null;
-      }
+    if (!data.receiverId) return;
 
-      const userDoc = await admin
-        .firestore()
-        .collection("users")
-        .doc(receiverId)
-        .get();
+    const userDoc = await admin
+      .firestore()
+      .collection("users")
+      .doc(data.receiverId)
+      .get();
 
-      if (!userDoc.exists || !userDoc.data().fcmToken) {
-        console.log("❌ No FCM token for receiver");
-        return null;
-      }
+    if (!userDoc.exists) return;
 
-      await admin.messaging().send({
-        token: userDoc.data().fcmToken,
-        notification: {
-          title: "New Message",
-          body: text,
-        },
-        android: {
-          priority: "high",
-          notification: { channelId: "chat_channel" },
-        },
-      });
+    const token = userDoc.data().fcmToken;
+    if (!token) return;
 
-      console.log("✅ Push notification sent");
-      return null;
-    } catch (e) {
-      console.error("🔥 Push error", e);
-      return null;
-    }
+    const payload = {
+      notification: {
+        title: "New Message",
+        body: data.text || "You have a new message",
+      },
+    };
+
+    return admin.messaging().sendToDevice(token, payload);
   });
